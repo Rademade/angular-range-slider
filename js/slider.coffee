@@ -1,10 +1,11 @@
-window.app = angular.module('app', ['ngSlider', 'ngTouch'])
-app.controller 'mainCtrl', ['$scope', ($scope)->
-  $scope.minimum = 14
-  $scope.maximum = 65
-  $scope.$watch 'minimum', -> console.log $scope.minimum
-
-]
+#how to use it
+#window.app = angular.module('app', ['ngSlider'])
+#app.controller 'mainCtrl', ['$scope', ($scope)->
+#  $scope.minimum = 14
+#  $scope.maximum = 65
+#  $scope.$watch 'minimum', -> console.log $scope.minimum
+#
+#]
 angular.module('ngSlider',[]).directive 'slider',[ ->
   restrict : 'A'
   scope :
@@ -30,13 +31,13 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     sliderContainer = document.getElementsByClassName('slider-container')[0]
     sliderRange = document.getElementById('slider-range')
     maxWidthRange = sliderContainer.clientWidth
-    scope.$watch minElement, -> minElement.style.left = -minElement.offsetWidth
-    scope.$watch maxElement, -> maxElement.style.right = -maxElement.offsetWidth
+    scope.$watch minElement, -> minElement.style.left = -minElement.offsetWidth + 'px'
+    scope.$watch maxElement, -> maxElement.style.right = -maxElement.offsetWidth  + 'px'
 
 
     #set init value
-    sliderRange.style.left = 0
-    sliderRange.style.right = 0
+    sliderRange.style.left = '0px'
+    sliderRange.style.right = '0px'
     step = sliderRange.clientWidth / (scope.maxValue - scope.minValue)
 
     initMaxValue = scope.maxValue
@@ -68,17 +69,17 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     dragMinBubble = (event) ->
       if event.changedTouches
         event = event.changedTouches[0]
-      resetPosition()
+
       if maxElement.style.right
         sliderRangeCurrentX = getPixelsOfSliderRangeProperty('right')
       onDropEventMAX = true
       startPosition = Math.floor event.clientX
+      console.log startPosition
 
     dragMaxBubble = (event) ->
       if event.changedTouches
         event = event.changedTouches[0]
 
-      resetPosition()
       if minElement.style.left
         sliderRangeCurrentX = getPixelsOfSliderRangeProperty('left')
       onDragEventMIN = true
@@ -87,6 +88,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     dropBubble = ->
       onDropEventMAX = false
       onDragEventMIN = false
+      resetPosition()
 
     moveBubble = (event)->
       if event.changedTouches
@@ -97,6 +99,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
     calculatePosition = (event, myPosition, siblingPosition, setValue, setLeftPosition, setRightPosition )->
       finishPosition = Math.floor event.clientX
+      console.log minPosition,finishPosition,maxPosition,sliderRange.style.right, sliderRange.style.left
       if minPosition < finishPosition < maxPosition
         setValue()
         scope.$apply()
@@ -105,7 +108,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
         setLeftPosition(event)
       if checkBubblesCollision()
         setRightPosition(event)
-        sliderRange.style[myPosition] = maxWidthRange - getPixelsOfSliderRangeProperty(siblingPosition)
+        sliderRange.style[myPosition] = (maxWidthRange - getPixelsOfSliderRangeProperty(siblingPosition)) + 'px'
 
 
     setMinPosition = (event)->
@@ -124,9 +127,11 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
       scope.minValue = scope.maxValue - 1  if scope.maxValue  <= scope.minValue
 
     setSliderRightPosition = ->
-      sliderRange.style.right = sliderRangeCurrentX - (finishPosition - startPosition)
+      sliderRange.style.right = sliderRangeCurrentX - (finishPosition - startPosition) + 'px'
 
-    setSliderLeftPosition = ->  sliderRange.style.left = sliderRangeCurrentX - (startPosition - finishPosition)
+    setSliderLeftPosition = ->
+      console.log startPosition
+      sliderRange.style.left = sliderRangeCurrentX - (startPosition - finishPosition) + 'px'
 
     checkBubblesCollision = ->
       checkOutOfTheRange() && (finishPosition < maxPosition)
@@ -136,15 +141,11 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
       sliderRangeWidth = 0 if sliderRangeWidth < 0
       maxWidthRange < (1*getPixelsOfSliderRangeProperty('left') + 1*getPixelsOfSliderRangeProperty('right') + sliderRangeWidth)
 
-    getPixelsOfSliderRangeProperty = (property)-> sliderRange.style[property].slice(0, -2)
+    getPixelsOfSliderRangeProperty = (property)->
+      sliderRange.style[property].slice(0, -2)
 
     false
 ]
-
-
-
-
-
 
 
 
