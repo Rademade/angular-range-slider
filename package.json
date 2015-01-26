@@ -1,0 +1,11 @@
+{
+  "name": "slider",
+  "version": "1.0.0",
+  "dependencies": {
+    "coffee-script": "^1.8.0",
+    "gulp": "^3.8.10",
+    "gulp-batch": "^1.0.4",
+    "gulp-coffee": "^2.2.0",
+    "gulp-watch": "^3.0.0"
+  }
+}

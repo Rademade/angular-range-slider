@@ -1,0 +1,7 @@
+{
+  "name": "slider",
+  "dependencies": {
+    "angular": "1.2.28",
+    "angular-touch": "1.2.28"
+  }
+}
