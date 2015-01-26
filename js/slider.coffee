@@ -1,25 +1,27 @@
 #how to use it
-#window.app = angular.module('app', ['ngSlider'])
-#app.controller 'mainCtrl', ['$scope', ($scope)->
-#  $scope.minimum = 14
-#  $scope.maximum = 65
-#  $scope.$watch 'minimum', -> console.log $scope.minimum
-#
-#]
+window.app = angular.module('app', ['ngSlider'])
+app.controller 'mainCtrl', ['$scope', ($scope)->
+  $scope.minimum = 33
+  $scope.maximum = 55
+  $scope.$watch 'minimum', -> console.log $scope.minimum
+
+]
 angular.module('ngSlider',[]).directive 'slider',[ ->
   restrict : 'A'
   scope :
     minValue : '='
     maxValue : '='
+    min : '='
+    max : '='
 
   template : "<div class='slider'>"+
                "<div class='slider-container'>"+
                   "<div class='slider-range'  id='slider-range'>"+
                     "<div class='slider-btn min' id='slider-btn-min'>"+
-                      "<span class='slider-btn-val'>{{minValue}}</span>"+
+                      "<span class='slider-btn-val'>{{min}}</span>"+
                     "</div>"+
                     "<div class='slider-btn max'>"+
-                      "<span class='slider-btn-val'>{{maxValue}}</span>"+
+                      "<span class='slider-btn-val'>{{max}}</span>"+
                     "</div>"+
                   "</div>"+
                "</div>"+
@@ -36,18 +38,20 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
 
     #set init value
-    sliderRange.style.left = '0px'
-    sliderRange.style.right = '0px'
-    step = sliderRange.clientWidth / (scope.maxValue - scope.minValue)
+    console.log scope.maxValue, scope.minValue, maxWidthRange
+    step = maxWidthRange / (scope.maxValue - scope.minValue)
+    console.log step
 
     initMaxValue = scope.maxValue
     initMinValue = scope.minValue
+    sliderRange.style.left = Math.floor(( scope.min - scope.minValue) * step) + 'px'
+    sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px'
 
     sliderRangeCurrentX = 0
     onDragEventMIN = false
     onDropEventMAX = false
-    startPosition = 0
-    finishPosition = 0
+    startPosition = (scope.min - scope.minValue) * step
+    finishPosition = (scope.maxValue - scope.max) * step
     maxPosition =  Number.MAX_VALUE
     minPosition = -Number.MAX_VALUE
     resetPosition = ->
@@ -118,19 +122,20 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
     setMaxValue = ->
       setSliderRightPosition()
-      scope.maxValue = initMaxValue - Math.floor getPixelsOfSliderRangeProperty('right')/step if Math.floor getPixelsOfSliderRangeProperty('right') > 0
-      scope.maxValue = scope.minValue + 1 if scope.maxValue <= scope.minValue
+      scope.max = initMaxValue - Math.floor getPixelsOfSliderRangeProperty('right')/step if Math.floor getPixelsOfSliderRangeProperty('right') > 0
+      console.log '---------------',initMaxValue, Math.floor getPixelsOfSliderRangeProperty('right')/step,
+      scope.max = scope.min + 1 if scope.max <= scope.min
 
     setMinValue = ->
       setSliderLeftPosition()
-      scope.minValue = initMinValue + Math.floor getPixelsOfSliderRangeProperty('left')/step if getPixelsOfSliderRangeProperty('left') > 0
-      scope.minValue = scope.maxValue - 1  if scope.maxValue  <= scope.minValue
+      scope.min = initMinValue + Math.floor getPixelsOfSliderRangeProperty('left')/step if getPixelsOfSliderRangeProperty('left') > 0
+      scope.min = scope.max - 1  if scope.max  <= scope.min
 
     setSliderRightPosition = ->
       sliderRange.style.right = sliderRangeCurrentX - (finishPosition - startPosition) + 'px'
 
     setSliderLeftPosition = ->
-      console.log startPosition
+#      console.log startPosition
       sliderRange.style.left = sliderRangeCurrentX - (startPosition - finishPosition) + 'px'
 
     checkBubblesCollision = ->
