@@ -1,15 +1,3 @@
-window.app = angular.module('app', ['ngSlider']);
-
-app.controller('mainCtrl', [
-  '$scope', function($scope) {
-    $scope.minimum = 33;
-    $scope.maximum = 55;
-    return $scope.$watch('minimum', function() {
-      return console.log($scope.minimum);
-    });
-  }
-]);
-
 angular.module('ngSlider', []).directive('slider', [
   function() {
     return {
