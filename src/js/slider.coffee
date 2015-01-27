@@ -1,10 +1,11 @@
 window.app = angular.module('app', ['ngSlider', 'ngTouch'])
+
 app.controller 'mainCtrl', ['$scope', ($scope)->
   $scope.minimum = 14
   $scope.maximum = 65
   $scope.$watch 'minimum', -> console.log $scope.minimum
-
 ]
+
 angular.module('ngSlider',[]).directive 'slider',[ ->
   restrict : 'A'
   scope :

@@ -1,7 +1,22 @@
 {
-  "name": "slider",
+  "name": "angular-range-slider",
+  "version": "0.0.1",
+  "main": "public/js/slider.js",
+  "ignore": [
+    "source",
+    "spec",
+    ".bowerrc",
+    ".gitignore",
+    ".jshintignore",
+    ".jshintrc",
+    "bower.json",
+    "gulpfile.js",
+    "gulpfile.coffee",
+    "package.json",
+    "README.md"
+  ],
   "dependencies": {
-    "angular": "1.2.28",
-    "angular-touch": "1.2.28"
+    "angular": ">=1.2.28",
+    "angular-touch": ">=1.2.28"
   }
 }
