@@ -10,17 +10,15 @@ angular.module('ngSlider', []).directive('slider', [
       },
       template: "<div class='slider'>" + "<div class='slider-container'>" + "<div class='slider-range'  id='slider-range'>" + "<div class='slider-btn min' id='slider-btn-min'>" + "<span class='slider-btn-val'>{{min}}</span>" + "</div>" + "<div class='slider-btn max'>" + "<span class='slider-btn-val'>{{max}}</span>" + "</div>" + "</div>" + "</div>" + "</div>",
       link: function(scope) {
-        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, checkBubblesCollision, checkOutOfTheRange, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, setMaxPosition, setMaxValue, setMinPosition, setMinValue, setSliderLeftPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step;
+        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, checkBubblesCollision, checkOutOfTheRange, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, setMaxPosition, setMaxValue, setMinPosition, setMinValue, setSliderLeftPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, _initialize;
         minElement = document.getElementById('slider-btn-min');
         maxElement = document.getElementsByClassName('slider-btn max')[0];
         sliderContainer = document.getElementsByClassName('slider-container')[0];
         sliderRange = document.getElementById('slider-range');
         maxWidthRange = sliderContainer.clientWidth;
-        step = maxWidthRange / (scope.maxValue - scope.minValue);
+        step = 0;
         initMaxValue = scope.maxValue;
         initMinValue = scope.minValue;
-        sliderRange.style.left = Math.floor((scope.min - scope.minValue) * step) + 'px';
-        sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px';
         sliderRangeCurrentX = 0;
         MAX_BUBBLE = 'MAX_BUBBLE';
         MIN_BUBBLE = 'MIN_BUBBLE';
@@ -59,6 +57,16 @@ angular.module('ngSlider', []).directive('slider', [
         document.body.onmousemove = function(event) {
           return moveBubble(event);
         };
+        window.addEventListener('resize', function() {
+          return _initialize();
+        });
+        _initialize = function() {
+          maxWidthRange = sliderContainer.clientWidth;
+          step = maxWidthRange / (scope.maxValue - scope.minValue);
+          sliderRange.style.left = Math.floor((scope.min - scope.minValue) * step) + 'px';
+          return sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px';
+        };
+        _initialize();
         dragBubble = function(type, element, currentBubble, event) {
           if (event.changedTouches) {
             event = event.changedTouches[0];

@@ -33,11 +33,9 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     sliderContainer = document.getElementsByClassName('slider-container')[0]
     sliderRange = document.getElementById('slider-range')
     maxWidthRange = sliderContainer.clientWidth
-    step = maxWidthRange / (scope.maxValue - scope.minValue)
+    step = 0
     initMaxValue = scope.maxValue
     initMinValue = scope.minValue
-    sliderRange.style.left = Math.floor(( scope.min - scope.minValue) * step) + 'px'
-    sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px'
     sliderRangeCurrentX = 0
     MAX_BUBBLE = 'MAX_BUBBLE'
     MIN_BUBBLE = 'MIN_BUBBLE'
@@ -60,6 +58,19 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
     document.body.addEventListener 'touchmove', (event)-> moveBubble(event)
     document.body.onmousemove = (event)-> moveBubble(event)
+
+    window.addEventListener 'resize', -> _initialize()
+
+
+    _initialize = ->
+      maxWidthRange = sliderContainer.clientWidth
+      step = maxWidthRange / (scope.maxValue - scope.minValue)
+      sliderRange.style.left = Math.floor(( scope.min - scope.minValue) * step) + 'px'
+      sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px'
+
+    _initialize()
+
+
 
     dragBubble = (type, element, currentBubble, event) ->
       if event.changedTouches
