@@ -1,11 +1,11 @@
 #how to use it
-#window.app = angular.module('app', ['ngSlider'])
-#app.controller 'mainCtrl', ['$scope', ($scope)->
-#  $scope.minimum = 33
-#  $scope.maximum = 55
-#  $scope.$watch 'minimum', -> console.log $scope.minimum
-#
-#]
+window.app = angular.module('app', ['ngSlider'])
+app.controller 'mainCtrl', ['$scope', ($scope)->
+  $scope.minimum = 33
+  $scope.maximum = 55
+  $scope.$watch 'minimum', -> console.log $scope.minimum
+
+]
 angular.module('ngSlider',[]).directive 'slider',[ ->
   restrict : 'A'
   scope :
@@ -61,10 +61,10 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
     window.addEventListener 'resize', -> _initialize()
 
-
     _initialize = ->
       maxWidthRange = sliderContainer.clientWidth
       step = maxWidthRange / (scope.maxValue - scope.minValue)
+
       sliderRange.style.left = Math.floor(( scope.min - scope.minValue) * step) + 'px'
       sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px'
 
@@ -98,12 +98,13 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
       if minPosition < finishPosition < maxPosition
         setValue()
         scope.$apply()
-      if (getPixelsOfSliderRangeProperty(myPosition) < 0)
+      if getPixelsOfSliderRangeProperty(myPosition) < 0
         sliderRange.style[myPosition] = '0px'
         setLeftPosition(event)
       if checkBubblesCollision()
         setRightPosition(event)
         sliderRange.style[myPosition] = (maxWidthRange - getPixelsOfSliderRangeProperty(siblingPosition)) + 'px'
+      setAllValues()
 
 
     setMinPosition = (event)->
@@ -111,22 +112,24 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     setMaxPosition = (event)->
       maxPosition = Math.floor event.clientX
 
-    setMaxValue = ->
-      setSliderRightPosition()
-      scope.max = initMaxValue - Math.floor getPixelsOfSliderRangeProperty('right')/step if Math.floor getPixelsOfSliderRangeProperty('right') > 0
-      scope.max = scope.min + 1 if scope.max <= scope.min
+    setMaxValue = -> setSliderRightPosition()
+    setMinValue = -> setSliderLeftPosition()
 
-    setMinValue = ->
-      setSliderLeftPosition()
-      scope.min = initMinValue + Math.floor getPixelsOfSliderRangeProperty('left')/step if getPixelsOfSliderRangeProperty('left') > 0
+
+    setAllValues = ->
+      scope.max = initMaxValue - Math.floor (getPixelsOfSliderRangeProperty('right')/step) if  getPixelsOfSliderRangeProperty('right') > -1
+      scope.max = scope.min + 1 if scope.max <= scope.min
+      scope.min = initMinValue + Math.floor (getPixelsOfSliderRangeProperty('left')/step) if getPixelsOfSliderRangeProperty('left') > -1
       scope.min = scope.max - 1  if scope.max  <= scope.min
 
+
     setSliderRightPosition = ->
-      sliderRange.style.right = sliderRangeCurrentX - (finishPosition - startPosition) + 'px'
+      sliderRange.style.right = sliderRangeCurrentX - (finishPosition - startPosition) + 'px' if isStartOfStep()
 
     setSliderLeftPosition = ->
-      left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'))
-      sliderRange.style.left = left + 'px'
+      if isStartOfStep()
+        left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'))
+        sliderRange.style.left = left + 'px'
 
     checkBubblesCollision = ->
       checkOutOfTheRange() && (finishPosition < maxPosition)
@@ -142,6 +145,11 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     resetPosition = ->
       maxPosition =  Number.MAX_VALUE
       minPosition = -Number.MAX_VALUE
+
+
+    isStartOfStep = ->
+      console.log (sliderRangeCurrentX - (finishPosition - startPosition) %  Math.floor step)
+      ((sliderRangeCurrentX - (finishPosition - startPosition)) %  Math.floor step) ==0
 
     false
 ]
