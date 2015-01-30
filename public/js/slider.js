@@ -25,7 +25,6 @@ angular.module('ngSlider', []).directive('slider', [
         MAX_BUBBLE = 'MAX_BUBBLE';
         MIN_BUBBLE = 'MIN_BUBBLE';
         currentDragBubble = false;
-        console.log(currentDragBubble);
         startPosition = (scope.min - scope.minValue) * step;
         finishPosition = (scope.maxValue - scope.max) * step;
         maxPosition = Number.MAX_VALUE;
@@ -129,7 +128,9 @@ angular.module('ngSlider', []).directive('slider', [
           return sliderRange.style.right = sliderRangeCurrentX - (finishPosition - startPosition) + 'px';
         };
         setSliderLeftPosition = function() {
-          return sliderRange.style.left = sliderRangeCurrentX - (startPosition - finishPosition) + 'px';
+          var left;
+          left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'));
+          return sliderRange.style.left = left + 'px';
         };
         checkBubblesCollision = function() {
           return checkOutOfTheRange() && (finishPosition < maxPosition);
@@ -140,7 +141,7 @@ angular.module('ngSlider', []).directive('slider', [
           if (sliderRangeWidth < 0) {
             sliderRangeWidth = 0;
           }
-          return maxWidthRange < (1 * getPixelsOfSliderRangeProperty('left') + 1 * getPixelsOfSliderRangeProperty('right') + sliderRangeWidth);
+          return maxWidthRange < (1 * getPixelsOfSliderRangeProperty('left') + 1 * getPixelsOfSliderRangeProperty('right') + sliderRangeWidth) - step / 2;
         };
         getPixelsOfSliderRangeProperty = function(property) {
           return sliderRange.style[property].slice(0, -2);
