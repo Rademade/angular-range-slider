@@ -1,15 +1,3 @@
-window.app = angular.module('app', ['ngSlider']);
-
-app.controller('mainCtrl', [
-  '$scope', function($scope) {
-    $scope.minimum = 33;
-    $scope.maximum = 55;
-    return $scope.$watch('minimum', function() {
-      return console.log($scope.minimum);
-    });
-  }
-]);
-
 angular.module('ngSlider', []).directive('slider', [
   function() {
     return {
@@ -22,7 +10,7 @@ angular.module('ngSlider', []).directive('slider', [
       },
       template: "<div class='slider'>" + "<div class='slider-container'>" + "<div class='slider-range'  id='slider-range'>" + "<div class='slider-btn min' id='slider-btn-min'>" + "<span class='slider-btn-val'>{{min}}</span>" + "</div>" + "<div class='slider-btn max'>" + "<span class='slider-btn-val'>{{max}}</span>" + "</div>" + "</div>" + "</div>" + "</div>",
       link: function(scope) {
-        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, checkBubblesCollision, checkOutOfTheRange, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, isStartOfStep, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, setAllValues, setMaxPosition, setMaxValue, setMinPosition, setMinValue, setSliderLeftPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, _initialize;
+        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, checkBubblesCollision, checkOutOfTheRange, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, leftBubblePosition, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, rightBubblePosition, setMaxPosition, setMaxValue, setMinPosition, setMinValue, setSliderLeftPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, _initialize;
         minElement = document.getElementById('slider-btn-min');
         maxElement = document.getElementsByClassName('slider-btn max')[0];
         sliderContainer = document.getElementsByClassName('slider-container')[0];
@@ -39,11 +27,15 @@ angular.module('ngSlider', []).directive('slider', [
         finishPosition = (scope.maxValue - scope.max) * step;
         maxPosition = Number.MAX_VALUE;
         minPosition = -Number.MAX_VALUE;
+        rightBubblePosition = 0;
+        leftBubblePosition = 0;
         scope.$watch(minElement, function() {
-          return minElement.style.left = -minElement.offsetWidth + 'px';
+          minElement.style.left = -minElement.offsetWidth + 'px';
+          return rightBubblePosition = -minElement.offsetWidth;
         });
         scope.$watch(maxElement, function() {
-          return maxElement.style.right = -maxElement.offsetWidth + 'px';
+          maxElement.style.right = -maxElement.offsetWidth + 'px';
+          return leftBubblePosition = -minElement.offsetWidth;
         });
         maxElement.addEventListener('mousedown', function(event) {
           return dragBubble('right', maxElement, MAX_BUBBLE, event);
@@ -74,7 +66,7 @@ angular.module('ngSlider', []).directive('slider', [
         });
         _initialize = function() {
           maxWidthRange = sliderContainer.clientWidth;
-          step = maxWidthRange / (scope.maxValue - scope.minValue);
+          step = maxWidthRange / (scope.maxValue - scope.minValue - 1);
           sliderRange.style.left = Math.floor((scope.min - scope.minValue) * step) + 'px';
           return sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px';
         };
@@ -97,7 +89,6 @@ angular.module('ngSlider', []).directive('slider', [
           if (event.changedTouches) {
             event = event.changedTouches[0];
           }
-          console.log(currentDragBubble);
           if (currentDragBubble === MAX_BUBBLE) {
             calculatePosition(event, 'right', 'left', setMaxValue, setMaxPosition, setMinPosition);
           }
@@ -117,9 +108,8 @@ angular.module('ngSlider', []).directive('slider', [
           }
           if (checkBubblesCollision()) {
             setRightPosition(event);
-            sliderRange.style[myPosition] = (maxWidthRange - getPixelsOfSliderRangeProperty(siblingPosition)) + 'px';
+            return sliderRange.style[myPosition] = (maxWidthRange - getPixelsOfSliderRangeProperty(siblingPosition)) + 'px';
           }
-          return setAllValues();
         };
         setMinPosition = function(event) {
           return minPosition = Math.floor(event.clientX);
@@ -133,30 +123,32 @@ angular.module('ngSlider', []).directive('slider', [
         setMinValue = function() {
           return setSliderLeftPosition();
         };
-        setAllValues = function() {
-          if (getPixelsOfSliderRangeProperty('right') > -1) {
-            scope.max = initMaxValue - Math.floor(getPixelsOfSliderRangeProperty('right') / step);
+        setSliderRightPosition = function() {
+          var lastMax;
+          rightBubblePosition = sliderRangeCurrentX - (finishPosition - startPosition);
+          lastMax = scope.max;
+          if (rightBubblePosition > -1) {
+            scope.max = initMaxValue - Math.floor(rightBubblePosition / step);
           }
           if (scope.max <= scope.min) {
             scope.max = scope.min + 1;
           }
-          if (getPixelsOfSliderRangeProperty('left') > -1) {
-            scope.min = initMinValue + Math.floor(getPixelsOfSliderRangeProperty('left') / step);
-          }
-          if (scope.max <= scope.min) {
-            return scope.min = scope.max - 1;
-          }
-        };
-        setSliderRightPosition = function() {
-          if (isStartOfStep()) {
-            return sliderRange.style.right = sliderRangeCurrentX - (finishPosition - startPosition) + 'px';
+          if (scope.max !== lastMax) {
+            return sliderRange.style.right = (initMaxValue - scope.max) * step + 'px';
           }
         };
         setSliderLeftPosition = function() {
-          var left;
-          if (isStartOfStep()) {
-            left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'));
-            return sliderRange.style.left = left + 'px';
+          var lastMin;
+          leftBubblePosition = sliderRangeCurrentX - (startPosition - finishPosition);
+          lastMin = scope.min;
+          if (leftBubblePosition > -1) {
+            scope.min = initMinValue + Math.floor(leftBubblePosition / step);
+          }
+          if (scope.max <= scope.min) {
+            scope.min = scope.max - 1;
+          }
+          if (scope.min !== lastMin) {
+            return sliderRange.style.left = (scope.min - initMinValue) * step + 'px';
           }
         };
         checkBubblesCollision = function() {
@@ -176,10 +168,6 @@ angular.module('ngSlider', []).directive('slider', [
         resetPosition = function() {
           maxPosition = Number.MAX_VALUE;
           return minPosition = -Number.MAX_VALUE;
-        };
-        isStartOfStep = function() {
-          console.log(sliderRangeCurrentX - (finishPosition - startPosition) % Math.floor(step));
-          return ((sliderRangeCurrentX - (finishPosition - startPosition)) % Math.floor(step)) === 0;
         };
         return false;
       }
