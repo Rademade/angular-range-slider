@@ -1,18 +1,18 @@
 #how to use it
-window.app = angular.module('app', ['ngSlider'])
-app.controller 'mainCtrl', ['$scope', ($scope)->
-  $scope.minimum = 33
-  $scope.maximum = 55
-  $scope.$watch 'minimum', -> console.log $scope.minimum
-
-]
+#window.app = angular.module('app', ['ngSlider'])
+#app.controller 'mainCtrl', ['$scope', ($scope)->
+#  $scope.minimum = 33
+#  $scope.maximum = 55
+#  $scope.$watch 'minimum', -> console.log $scope.minimum
+#
+#]
 angular.module('ngSlider',[]).directive 'slider',[ ->
   restrict : 'A'
   scope :
     minValue : '='
     maxValue : '='
-    min : '='
-    max : '='
+    minOut : '='
+    maxOut : '='
     jumping : '='
 
   template : "<div class='slider'>"+
@@ -35,6 +35,8 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     sliderRange = document.getElementById('slider-range')
     maxWidthRange = sliderContainer.clientWidth
     step = 0
+    scope.min = scope.minOut
+    scope.max = scope.maxOut
     initMaxValue = scope.maxValue
     initMinValue = scope.minValue
     sliderRangeCurrentX = 0
@@ -71,6 +73,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
     window.addEventListener 'resize', -> _initialize()
 
+
     _initialize = ->
       maxWidthRange = sliderContainer.clientWidth
       step = maxWidthRange / (scope.maxValue - scope.minValue - 1)
@@ -92,6 +95,8 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     dropBubble = ->
       currentDragBubble = false
       resetPosition()
+      updateValues()
+      scope.$apply()
 
     moveBubble = (event)->
       if event.changedTouches
@@ -135,6 +140,10 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
           sliderRange.style.left = left + 'px'
 
 
+
+    updateValues = ->
+      scope.minOut = scope.min
+      scope.maxOut = scope.max
 
     getPixelsOfSliderRangeProperty = (property)->
       sliderRange.style[property].slice(0, -2)

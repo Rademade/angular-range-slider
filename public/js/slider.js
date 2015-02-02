@@ -1,15 +1,3 @@
-window.app = angular.module('app', ['ngSlider']);
-
-app.controller('mainCtrl', [
-  '$scope', function($scope) {
-    $scope.minimum = 33;
-    $scope.maximum = 55;
-    return $scope.$watch('minimum', function() {
-      return console.log($scope.minimum);
-    });
-  }
-]);
-
 angular.module('ngSlider', []).directive('slider', [
   function() {
     return {
@@ -17,19 +5,21 @@ angular.module('ngSlider', []).directive('slider', [
       scope: {
         minValue: '=',
         maxValue: '=',
-        min: '=',
-        max: '=',
+        minOut: '=',
+        maxOut: '=',
         jumping: '='
       },
       template: "<div class='slider'>" + "<div class='slider-container'>" + "<div class='slider-range'  id='slider-range'>" + "<div class='slider-btn min' id='slider-btn-min'>" + "<span class='slider-btn-val'>{{min}}</span>" + "</div>" + "<div class='slider-btn max'>" + "<span class='slider-btn-val'>{{max}}</span>" + "</div>" + "</div>" + "</div>" + "</div>",
       link: function(scope) {
-        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, leftBubblePosition, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, rightBubblePosition, setSliderLeftPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, _initialize;
+        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, leftBubblePosition, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, rightBubblePosition, setSliderLeftPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, updateValues, _initialize;
         minElement = document.getElementById('slider-btn-min');
         maxElement = document.getElementsByClassName('slider-btn max')[0];
         sliderContainer = document.getElementsByClassName('slider-container')[0];
         sliderRange = document.getElementById('slider-range');
         maxWidthRange = sliderContainer.clientWidth;
         step = 0;
+        scope.min = scope.minOut;
+        scope.max = scope.maxOut;
         initMaxValue = scope.maxValue;
         initMinValue = scope.minValue;
         sliderRangeCurrentX = 0;
@@ -96,7 +86,9 @@ angular.module('ngSlider', []).directive('slider', [
         };
         dropBubble = function() {
           currentDragBubble = false;
-          return resetPosition();
+          resetPosition();
+          updateValues();
+          return scope.$apply();
         };
         moveBubble = function(event) {
           if (event.changedTouches) {
@@ -160,6 +152,10 @@ angular.module('ngSlider', []).directive('slider', [
               return sliderRange.style.left = left + 'px';
             }
           }
+        };
+        updateValues = function() {
+          scope.minOut = scope.min;
+          return scope.maxOut = scope.max;
         };
         getPixelsOfSliderRangeProperty = function(property) {
           return sliderRange.style[property].slice(0, -2);
