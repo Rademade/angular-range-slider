@@ -1,11 +1,11 @@
 #how to use it
-#window.app = angular.module('app', ['ngSlider'])
-#app.controller 'mainCtrl', ['$scope', ($scope)->
-#  $scope.minimum = 33
-#  $scope.maximum = 55
-#  $scope.$watch 'minimum', -> console.log $scope.minimum
-#
-#]
+window.app = angular.module('app', ['ngSlider'])
+app.controller 'mainCtrl', ['$scope', ($scope)->
+  $scope.minimum = 33
+  $scope.maximum = 55
+  $scope.$watch 'minimum', -> console.log $scope.minimum
+
+]
 angular.module('ngSlider',[]).directive 'slider',[ ->
   restrict : 'A'
   scope :
@@ -13,6 +13,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     maxValue : '='
     min : '='
     max : '='
+    jumping : '='
 
   template : "<div class='slider'>"+
                "<div class='slider-container'>"+
@@ -105,16 +106,19 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
         scope.$apply()
 
 
-
-
     setSliderRightPosition = ->
       rightBubblePosition = sliderRangeCurrentX - (finishPosition - startPosition)
       lastMax = scope.max
       scope.max = initMaxValue - Math.floor (rightBubblePosition/step) if  rightBubblePosition > -1
       scope.max = scope.min + 1 if scope.max <= scope.min
       scope.max = scope.maxValue if scope.max >= scope.maxValue
-      if scope.max != lastMax && scope.max > scope.min && scope.max <= scope.maxValue
-        sliderRange.style.right = (initMaxValue - scope.max)* step + 'px'
+      if scope.jumping
+        if scope.max != lastMax && scope.max > scope.min && scope.max <= scope.maxValue
+          sliderRange.style.right = (initMaxValue - scope.max)* step + 'px'
+      else
+        if scope.max > scope.min && scope.max <= scope.maxValue && rightBubblePosition/step > 0
+          sliderRange.style.right = rightBubblePosition + 'px'
+
 
     setSliderLeftPosition = ->
       leftBubblePosition = sliderRangeCurrentX - (startPosition - finishPosition)
@@ -122,9 +126,13 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
       scope.min = initMinValue + Math.floor (leftBubblePosition/step) if leftBubblePosition > -1
       scope.min = scope.max - 1  if scope.max  <= scope.min
       scope.min = scope.minValue if scope.min <= scope.minValue
-
-      if scope.min != lastMin && scope.min >= scope.minValue && scope.min < scope.max
-        sliderRange.style.left = (scope.min - initMinValue)* step  + 'px'
+      if scope.jumping
+        if scope.min != lastMin && scope.min >= scope.minValue && scope.min < scope.max
+          sliderRange.style.left = (scope.min - initMinValue)* step  + 'px'
+      else
+        if scope.min < scope.max && scope.min >= scope.minValue && leftBubblePosition/step > 0
+          left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'))
+          sliderRange.style.left = left + 'px'
 
 
 

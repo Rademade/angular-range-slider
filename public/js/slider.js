@@ -1,3 +1,15 @@
+window.app = angular.module('app', ['ngSlider']);
+
+app.controller('mainCtrl', [
+  '$scope', function($scope) {
+    $scope.minimum = 33;
+    $scope.maximum = 55;
+    return $scope.$watch('minimum', function() {
+      return console.log($scope.minimum);
+    });
+  }
+]);
+
 angular.module('ngSlider', []).directive('slider', [
   function() {
     return {
@@ -6,7 +18,8 @@ angular.module('ngSlider', []).directive('slider', [
         minValue: '=',
         maxValue: '=',
         min: '=',
-        max: '='
+        max: '=',
+        jumping: '='
       },
       template: "<div class='slider'>" + "<div class='slider-container'>" + "<div class='slider-range'  id='slider-range'>" + "<div class='slider-btn min' id='slider-btn-min'>" + "<span class='slider-btn-val'>{{min}}</span>" + "</div>" + "<div class='slider-btn max'>" + "<span class='slider-btn-val'>{{max}}</span>" + "</div>" + "</div>" + "</div>" + "</div>",
       link: function(scope) {
@@ -114,12 +127,18 @@ angular.module('ngSlider', []).directive('slider', [
           if (scope.max >= scope.maxValue) {
             scope.max = scope.maxValue;
           }
-          if (scope.max !== lastMax && scope.max > scope.min && scope.max <= scope.maxValue) {
-            return sliderRange.style.right = (initMaxValue - scope.max) * step + 'px';
+          if (scope.jumping) {
+            if (scope.max !== lastMax && scope.max > scope.min && scope.max <= scope.maxValue) {
+              return sliderRange.style.right = (initMaxValue - scope.max) * step + 'px';
+            }
+          } else {
+            if (scope.max > scope.min && scope.max <= scope.maxValue && rightBubblePosition / step > 0) {
+              return sliderRange.style.right = rightBubblePosition + 'px';
+            }
           }
         };
         setSliderLeftPosition = function() {
-          var lastMin;
+          var lastMin, left;
           leftBubblePosition = sliderRangeCurrentX - (startPosition - finishPosition);
           lastMin = scope.min;
           if (leftBubblePosition > -1) {
@@ -131,8 +150,15 @@ angular.module('ngSlider', []).directive('slider', [
           if (scope.min <= scope.minValue) {
             scope.min = scope.minValue;
           }
-          if (scope.min !== lastMin && scope.min >= scope.minValue && scope.min < scope.max) {
-            return sliderRange.style.left = (scope.min - initMinValue) * step + 'px';
+          if (scope.jumping) {
+            if (scope.min !== lastMin && scope.min >= scope.minValue && scope.min < scope.max) {
+              return sliderRange.style.left = (scope.min - initMinValue) * step + 'px';
+            }
+          } else {
+            if (scope.min < scope.max && scope.min >= scope.minValue && leftBubblePosition / step > 0) {
+              left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'));
+              return sliderRange.style.left = left + 'px';
+            }
           }
         };
         getPixelsOfSliderRangeProperty = function(property) {
