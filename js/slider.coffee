@@ -122,7 +122,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
           sliderRange.style.right = (initMaxValue - scope.max)* step + 'px'
       else
         if scope.max > scope.min && scope.max <= scope.maxValue && rightBubblePosition/step > 0
-          sliderRange.style.right = rightBubblePosition + 'px'
+          sliderRange.style.right = Math.min(sliderRangeCurrentX - (finishPosition - startPosition),maxWidthRange - getPixelsOfSliderRangeProperty('left')) + 'px'
 
 
     setSliderLeftPosition = ->

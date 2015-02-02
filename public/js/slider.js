@@ -119,13 +119,14 @@ angular.module('ngSlider', []).directive('slider', [
           if (scope.max >= scope.maxValue) {
             scope.max = scope.maxValue;
           }
+          console.log('dddddd');
           if (scope.jumping) {
             if (scope.max !== lastMax && scope.max > scope.min && scope.max <= scope.maxValue) {
               return sliderRange.style.right = (initMaxValue - scope.max) * step + 'px';
             }
           } else {
             if (scope.max > scope.min && scope.max <= scope.maxValue && rightBubblePosition / step > 0) {
-              return sliderRange.style.right = rightBubblePosition + 'px';
+              return sliderRange.style.right = Math.min(sliderRangeCurrentX - (finishPosition - startPosition), maxWidthRange - getPixelsOfSliderRangeProperty('left')) + 'px';
             }
           }
         };
@@ -147,6 +148,7 @@ angular.module('ngSlider', []).directive('slider', [
               return sliderRange.style.left = (scope.min - initMinValue) * step + 'px';
             }
           } else {
+            console.log(scope.min, leftBubblePosition / step, sliderRange.style.left, sliderRange.style.right);
             if (scope.min < scope.max && scope.min >= scope.minValue && leftBubblePosition / step > 0) {
               left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'));
               return sliderRange.style.left = left + 'px';
