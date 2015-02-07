@@ -1,5 +1,12 @@
 {
-  "name": "slider",
+  "name": "angular-range-slider",
+  "main": "/public/js/slider.js",
+  "version": "0.0.3",
+  "description": "AngularJS range slider. Solution for dates or ages",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rademade/angular-range-slider.git"
+  },
   "dependencies": {
     "angular": "1.2.28",
     "angular-touch": "1.2.28"
