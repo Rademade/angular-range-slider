@@ -1,4 +1,3 @@
-#how to use it
 #window.app = angular.module('app', ['ngSlider'])
 #app.controller 'mainCtrl', ['$scope', ($scope)->
 #  $scope.minimum = 33
@@ -116,7 +115,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
       lastMax = scope.max
       scope.max = initMaxValue - Math.floor (rightBubblePosition/step) if  rightBubblePosition > -1
       scope.max = scope.min + 1 if scope.max <= scope.min
-      scope.max = scope.maxValue if scope.max >= scope.maxValue
+      scope.max = scope.maxValue if scope.max >= scope.maxValue || rightBubblePosition < -1
       if scope.jumping
         if scope.max != lastMax && scope.max > scope.min && scope.max <= scope.maxValue
           sliderRange.style.right = (initMaxValue - scope.max)* step + 'px'
@@ -130,7 +129,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
       lastMin = scope.min
       scope.min = initMinValue + Math.floor (leftBubblePosition/step) if leftBubblePosition > -1
       scope.min = scope.max - 1  if scope.max  <= scope.min
-      scope.min = scope.minValue if scope.min <= scope.minValue
+      scope.min = scope.minValue if scope.min <= scope.minValue || leftBubblePosition < -1
       if scope.jumping
         if scope.min != lastMin && scope.min >= scope.minValue && scope.min < scope.max
           sliderRange.style.left = (scope.min - initMinValue)* step  + 'px'
