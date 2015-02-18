@@ -81,8 +81,8 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
     _initialize()
 
-
     dragBubble = (type, element, currentBubble, event) ->
+      event.preventDefault()
       if event.changedTouches
         event = event.changedTouches[0]
 
