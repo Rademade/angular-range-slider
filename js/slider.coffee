@@ -49,7 +49,6 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     rightBubblePosition = 0
     leftBubblePosition = 0
 
-
     scope.$watch minElement, ->
       minElement.style.left = -minElement.offsetWidth + 'px'
       rightBubblePosition = -minElement.offsetWidth
@@ -57,6 +56,15 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     scope.$watch maxElement, ->
       maxElement.style.right = -maxElement.offsetWidth  + 'px'
       leftBubblePosition = -minElement.offsetWidth
+
+    scope.$watch 'minOut', ->
+      if scope.minOut >=  scope.minValue && scope.minOut < scope.maxOut
+        scope.min = scope.minOut
+        _initialize()
+    scope.$watch 'maxOut', ->
+      if scope.maxOut >  scope.minValue && scope.maxOut <= scope.maxValue
+        scope.max = scope.maxOut
+        _initialize()
 
     maxElement.addEventListener 'mousedown', (event)-> dragBubble('right', maxElement, MAX_BUBBLE, event)
     maxElement.addEventListener 'touchstart', (event)-> dragBubble('right', maxElement, MAX_BUBBLE, event)

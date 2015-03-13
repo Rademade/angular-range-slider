@@ -40,6 +40,18 @@ angular.module('ngSlider', []).directive('slider', [
           maxElement.style.right = -maxElement.offsetWidth + 'px';
           return leftBubblePosition = -minElement.offsetWidth;
         });
+        scope.$watch('minOut', function() {
+          if (scope.minOut >= scope.minValue && scope.minOut < scope.maxOut) {
+            scope.min = scope.minOut;
+            return _initialize();
+          }
+        });
+        scope.$watch('maxOut', function() {
+          if (scope.maxOut > scope.minValue && scope.maxOut <= scope.maxValue) {
+            scope.max = scope.maxOut;
+            return _initialize();
+          }
+        });
         maxElement.addEventListener('mousedown', function(event) {
           return dragBubble('right', maxElement, MAX_BUBBLE, event);
         });
