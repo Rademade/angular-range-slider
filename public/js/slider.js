@@ -139,7 +139,6 @@ angular.module('ngSlider', []).directive('slider', [
             scope[limitValue] = scope[value];
           }
           if (scope.jumping) {
-            console.log(scope[limitValue] !== result);
             if (scope[limitValue] !== result && scope.min < scope.max && (scope[limitValue] >= scope[value] * inversionIndex)) {
               return sliderRange.style[property] = (scope[limitValue] - initValue) * inversionIndex * step + 'px';
             }

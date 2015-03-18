@@ -126,7 +126,6 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
       scope[limitValue] = scope[oppositeLimitValue] - inversionIndex  if scope.max  <= scope.min
       scope[limitValue] = scope[value] if scope[limitValue] <= scope[value] * inversionIndex || bubblePosition < -1
       if scope.jumping
-        console.log  scope[limitValue] != result
         if scope[limitValue] != result &&  scope.min < scope.max  && (scope[limitValue] >= scope[value] * inversionIndex)
           sliderRange.style[property] = (scope[limitValue] - initValue) * inversionIndex * step + 'px'
       else
