@@ -11,7 +11,7 @@ angular.module('ngSlider', []).directive('slider', [
       },
       template: "<div class='slider'>" + "<div class='slider-container'>" + "<div class='slider-range'  id='slider-range'>" + "<div class='slider-btn min' id='slider-btn-min'>" + "<span class='slider-btn-val'>{{min}}</span>" + "</div>" + "<div class='slider-btn max'>" + "<span class='slider-btn-val'>{{max}}</span>" + "</div>" + "</div>" + "</div>" + "</div>",
       link: function(scope) {
-        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, leftBubblePosition, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, rightBubblePosition, setSliderLeftPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, updateValues, _initialize;
+        var MAX_BUBBLE, MIN_BUBBLE, calculatePosition, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, leftBubblePosition, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, rightBubblePosition, setSliderLeftPosition, setSliderPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, updateValues, _initialize;
         minElement = document.getElementById('slider-btn-min');
         maxElement = document.getElementsByClassName('slider-btn max')[0];
         sliderContainer = document.getElementsByClassName('slider-container')[0];
@@ -120,49 +120,32 @@ angular.module('ngSlider', []).directive('slider', [
           return scope.$apply();
         };
         setSliderRightPosition = function() {
-          var lastMax;
-          rightBubblePosition = sliderRangeCurrentX - (finishPosition - startPosition);
-          lastMax = scope.max;
-          if (rightBubblePosition > -1) {
-            scope.max = initMaxValue - Math.floor(rightBubblePosition / step);
-          }
-          if (scope.max <= scope.min) {
-            scope.max = scope.min + 1;
-          }
-          if (scope.max >= scope.maxValue || rightBubblePosition < -1) {
-            scope.max = scope.maxValue;
-          }
-          if (scope.jumping) {
-            if (scope.max !== lastMax && scope.max > scope.min && scope.max <= scope.maxValue) {
-              return sliderRange.style.right = (initMaxValue - scope.max) * step + 'px';
-            }
-          } else {
-            if (scope.max > scope.min && scope.max <= scope.maxValue && rightBubblePosition / step > 0) {
-              return sliderRange.style.right = Math.min(sliderRangeCurrentX - (finishPosition - startPosition), maxWidthRange - getPixelsOfSliderRangeProperty('left')) + 'px';
-            }
-          }
+          return setSliderPosition(rightBubblePosition, -1, 'maxValue', 'max', 'min', initMaxValue, 'right', 'left');
         };
         setSliderLeftPosition = function() {
-          var lastMin, left;
-          leftBubblePosition = sliderRangeCurrentX - (startPosition - finishPosition);
-          lastMin = scope.min;
-          if (leftBubblePosition > -1) {
-            scope.min = initMinValue + Math.floor(leftBubblePosition / step);
+          return setSliderPosition(leftBubblePosition, 1, 'minValue', 'min', 'max', initMinValue, 'left', 'right');
+        };
+        setSliderPosition = function(bubblePosition, inversionIndex, value, limitValue, oppositeLimitValue, initValue, property, oppositeProperty) {
+          var result;
+          bubblePosition = sliderRangeCurrentX - (startPosition - finishPosition) * inversionIndex;
+          result = scope[limitValue];
+          if (bubblePosition > -1) {
+            scope[limitValue] = initValue + Math.floor((bubblePosition / step) * inversionIndex);
           }
           if (scope.max <= scope.min) {
-            scope.min = scope.max - 1;
+            scope[limitValue] = scope[oppositeLimitValue] - inversionIndex;
           }
-          if (scope.min <= scope.minValue || leftBubblePosition < -1) {
-            scope.min = scope.minValue;
+          if (scope[limitValue] <= scope[value] * inversionIndex || bubblePosition < -1) {
+            scope[limitValue] = scope[value];
           }
           if (scope.jumping) {
-            if (scope.min !== lastMin && scope.min >= scope.minValue && scope.min < scope.max) {
-              return sliderRange.style.left = (scope.min - initMinValue) * step + 'px';
+            console.log(scope[limitValue] !== result);
+            if (scope[limitValue] !== result && scope.min < scope.max && (scope[limitValue] >= scope[value] * inversionIndex)) {
+              return sliderRange.style[property] = (scope[limitValue] - initValue) * inversionIndex * step + 'px';
             }
           } else {
-            if (scope.min < scope.max && scope.min >= scope.minValue && leftBubblePosition / step > 0) {
-              left = Math.min(sliderRangeCurrentX - (startPosition - finishPosition), maxWidthRange - getPixelsOfSliderRangeProperty('right'));
-              return sliderRange.style.left = left + 'px';
+            if (scope.min < scope.max && scope[limitValue] >= scope[value] * inversionIndex && bubblePosition / step > 0) {
+              return sliderRange.style[property] = Math.min(sliderRangeCurrentX - (startPosition - finishPosition) * inversionIndex, maxWidthRange - getPixelsOfSliderRangeProperty(oppositeProperty)) + 'px';
             }
           }
         };
