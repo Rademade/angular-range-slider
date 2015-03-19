@@ -1,0 +1,10 @@
+html
+    head
+        <!-- inject:css -->
+        <!-- endinject -->
+    body(ng-app='app', ng-controller='mainCtrl')
+        div.slider-wrapper(slider='', min-value='20', max-value='65', min-out='minimum', max-out='maximum', style='width:400px;', jumping='false')
+        input(type='text', ng-model='minimum')
+        <!-- inject:js -->
+        <!-- endinject -->
+
