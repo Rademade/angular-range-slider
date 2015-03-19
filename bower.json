@@ -1,6 +1,6 @@
 {
   "name": "angular-range-slider",
-  "main": "/public/js/slider.js",
+  "main": "/build/angular-range-slider.min.js",
   "version": "0.0.6",
   "description": "AngularJS range slider. Solution for dates or ages",
   "repository": {
