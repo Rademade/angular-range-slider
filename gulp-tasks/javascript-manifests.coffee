@@ -7,7 +7,6 @@ module.exports = (->
   manifests.vendor = ->
     file_manager.rootify [
       'angular/angular'
-      'angular-touch/dist/angular-touch'
     ], "bower_components", 'js'
 
   manifests.library = ->
