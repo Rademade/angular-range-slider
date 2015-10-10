@@ -8,17 +8,18 @@
           maxValue: '=',
           minOut: '=',
           maxOut: '=',
-          jumping: '='
+          jumping: '=',
+          bubbleOffset: '=?'
         },
         template: "<div class='slider'>" + "<div class='slider-container'>" + "<div class='slider-range'  id='slider-range'>" + "<div class='slider-btn min' id='slider-btn-min'>" + "<span class='slider-btn-val'>{{min}}</span>" + "</div>" + "<div class='slider-btn max'>" + "<span class='slider-btn-val'>{{max}}</span>" + "</div>" + "</div>" + "</div>" + "</div>",
         link: function(scope) {
-          var MAX_BUBBLE, MIN_BUBBLE, bubbleErrorOffset, bubbleSize, calculatePosition, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, leftBubblePosition, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, rightBubblePosition, setSliderLeftPosition, setSliderPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, updateValues, _initialize;
+          var MAX_BUBBLE, MIN_BUBBLE, bubbleOffset, bubbleSize, calculatePosition, currentDragBubble, dragBubble, dropBubble, finishPosition, getPixelsOfSliderRangeProperty, initMaxValue, initMinValue, leftBubblePosition, maxElement, maxPosition, maxWidthRange, minElement, minPosition, moveBubble, resetPosition, rightBubblePosition, setSliderLeftPosition, setSliderPosition, setSliderRightPosition, sliderContainer, sliderRange, sliderRangeCurrentX, startPosition, step, updateValues, _initialize;
           minElement = document.getElementById('slider-btn-min');
           maxElement = document.getElementsByClassName('slider-btn max')[0];
           sliderContainer = document.getElementsByClassName('slider-container')[0];
           sliderRange = document.getElementById('slider-range');
           bubbleSize = minElement.clientWidth;
-          bubbleErrorOffset = 1;
+          bubbleOffset = scope.bubbleOffset | 1;
           maxWidthRange = 0;
           step = 0;
           scope.min = scope.minOut;
@@ -37,12 +38,12 @@
           leftBubblePosition = 0;
           scope.$watch(minElement, function() {
             bubbleSize = minElement.clientWidth;
-            minElement.style.left = -bubbleErrorOffset + 'px';
-            return rightBubblePosition = -bubbleErrorOffset;
+            minElement.style.left = -bubbleOffset + 'px';
+            return rightBubblePosition = -bubbleOffset;
           });
           scope.$watch(maxElement, function() {
-            maxElement.style.right = -bubbleErrorOffset + 'px';
-            return leftBubblePosition = -bubbleErrorOffset;
+            maxElement.style.right = -bubbleOffset + 'px';
+            return leftBubblePosition = -bubbleOffset;
           });
           scope.$watch('minOut', function() {
             if (scope.minOut >= scope.minValue && scope.minOut < scope.maxOut) {
@@ -84,7 +85,7 @@
             return _initialize();
           });
           _initialize = function() {
-            maxWidthRange = sliderContainer.clientWidth - (bubbleSize - bubbleErrorOffset) * 2;
+            maxWidthRange = sliderContainer.clientWidth - (bubbleSize - bubbleOffset) * 2;
             step = maxWidthRange / (scope.maxValue - scope.minValue - 1);
             sliderRange.style.left = Math.floor((scope.min - scope.minValue) * step) + 'px';
             return sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px';
