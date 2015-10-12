@@ -6,6 +6,7 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     minOut : '='
     maxOut : '='
     jumping : '='
+    bubbleOffset : '=?'
 
   template : "<div class='slider'>"+
                "<div class='slider-container'>"+
@@ -25,7 +26,9 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     maxElement = document.getElementsByClassName('slider-btn max')[0]
     sliderContainer = document.getElementsByClassName('slider-container')[0]
     sliderRange = document.getElementById('slider-range')
-    maxWidthRange = sliderContainer.clientWidth
+    bubbleSize = minElement.clientWidth
+    bubbleOffset = scope.bubbleOffset | 1
+    maxWidthRange = 0
     step = 0
     scope.min = scope.minOut
     scope.max = scope.maxOut
@@ -43,12 +46,13 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
     leftBubblePosition = 0
 
     scope.$watch minElement, ->
-      minElement.style.left = -minElement.offsetWidth + 'px'
-      rightBubblePosition = -minElement.offsetWidth
+      bubbleSize = minElement.clientWidth
+      minElement.style.left = - bubbleOffset + 'px'
+      rightBubblePosition = - bubbleOffset
 
     scope.$watch maxElement, ->
-      maxElement.style.right = -maxElement.offsetWidth  + 'px'
-      leftBubblePosition = -minElement.offsetWidth
+      maxElement.style.right = - bubbleOffset + 'px'
+      leftBubblePosition = - bubbleOffset
 
     scope.$watch 'minOut', ->
       if scope.minOut >=  scope.minValue && scope.minOut < scope.maxOut
@@ -73,9 +77,8 @@ angular.module('ngSlider',[]).directive 'slider',[ ->
 
     window.addEventListener 'resize', -> _initialize()
 
-
     _initialize = ->
-      maxWidthRange = sliderContainer.clientWidth
+      maxWidthRange = sliderContainer.clientWidth - (bubbleSize - bubbleOffset) * 2
       step = maxWidthRange / (scope.maxValue - scope.minValue - 1)
       sliderRange.style.left = Math.floor(( scope.min - scope.minValue) * step) + 'px'
       sliderRange.style.right = Math.floor((scope.maxValue - scope.max) * step) + 'px'
